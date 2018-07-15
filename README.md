@@ -20,7 +20,7 @@ Provides three commands:
 
 This plugin was forked from github repository
 [dotvim](https://github.com/lervag/dotvim) created by Karl Yngve Lervåg
-([lervag](mailto:karl.yngve+git@gmail.com)).
+([lervag](https://github.com/lervag)).
 
 ## License ##
 
