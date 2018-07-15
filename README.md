@@ -4,15 +4,18 @@ A vim plugin that logs autocmd events.
 
 ## Features
 
-Provides the two commands:
+Provides three commands:
 
-|               |                                                            |
-|---------------|------------------------------------------------------------|
-|:LogAutocmds   |Toggles logging of autocmd events.                          |
-|               |The plugin will echo messages advising the user whether the plugin was just enabled or disabled, and providing the path to the log file.|
-|:AutocmdLogFile|Change the path to the log file.                            |
-|               |Default log file is `vim-autocmds-log` in a temporary directory selected according to the algorithm used by vim for creating temporary files (see `:h tempfile`).|
-|               |If the variable `g:dn_autocmds_log` is set at the time the plugin is loaded, its value will be used as the path of the log file. The plugin will not check the validity of the path supplied. An invalid or unwritable path will result in an error when the plugin attempts to log an autocmd event.|
+|Command           |Notes                                                    |
+|------------------|---------------------------------------------------------|
+|:LogAutocmds      |Toggles logging of autocmd events.                       |
+|                  |Creates log file if it does not exist. Appends to log file if
+it already exist   s.|
+|                  |The plugin will echo messages advising the user whether the plugin was just enabled or disabled, and providing the path to the log file.|
+|:AutocmdLogFile   |Change the path to the log file.                         |
+|                  |Default log file is `vim-autocmds-log` in a temporary directory selected according to the algorithm used by vim for creating temporary files (see `:h tempfile`).|
+|                  |If the variable `g:dn_autocmds_log` is set at the time the plugin is loaded, its value will be used as the path of the log file. The plugin will not check the validity of the path supplied. An invalid or unwritable path will result in an error when the plugin attempts to log an autocmd event.|
+|:DeleteAutocmdsLog|Deletes log file if it exists.                           |
 
 ## Credits ##
 
