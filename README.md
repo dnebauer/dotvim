@@ -9,8 +9,7 @@ Provides three commands:
 |Command           |Notes                                                    |
 |------------------|---------------------------------------------------------|
 |:LogAutocmds      |Toggles logging of autocmd events.                       |
-|                  |Creates log file if it does not exist. Appends to log file if
-it already exist   s.|
+|                  |Creates log file if it does not exist. Appends to log file if it already exists.|
 |                  |The plugin will echo messages advising the user whether the plugin was just enabled or disabled, and providing the path to the log file.|
 |:AutocmdLogFile   |Change the path to the log file.                         |
 |                  |Default log file is `vim-autocmds-log` in a temporary directory selected according to the algorithm used by vim for creating temporary files (see `:h tempfile`).|
