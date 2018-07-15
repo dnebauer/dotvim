@@ -6,7 +6,7 @@ A vim plugin that logs autocmd events.
 
 Provides the two commands:
 
-|Command        |Effect                                                      |
+|               |                                                            |
 |---------------|------------------------------------------------------------|
 |:LogAutocmds   |Toggles logging of autocmd events.                          |
 |               |The plugin will echo messages advising the user whether the plugin was just enabled or disabled, and providing the path to the log file.|
