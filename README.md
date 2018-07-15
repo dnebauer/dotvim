@@ -29,7 +29,7 @@ repository did not include any license. While github [terms of
 service](https://help.github.com/articles/github-terms-of-service/) allow users
 to fork repositories, Mr Lervåg's rights are otherwise reserved.
 
-As far as my own rights in this work, I have used the [CC0
+As far as my own rights are concerned, I have used the [CC0
 license](http://creativecommons.org/publicdomain/zero/1.0/) to ensure that to
 the extent possible under law, I have waived all copyright and related or
 neighboring rights to this work.
