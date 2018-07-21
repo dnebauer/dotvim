@@ -112,17 +112,26 @@ function! dn#log_autocmds#_toggle() abort
     augroup END
 
     let l:date = strftime('%F', localtime())
+    let l:abort_enable = 0
 
     try
         if s:enabled  " stop logging
             echomsg 'Log file is ' . s:logfile
             echomsg 'Autocmd event logging is DISABLED'
-            call s:log('Stopped autocmd log (' . l:date . ')')
+            try
+                call s:log('Stopped autocmd log (' . l:date . ')')
+            catch
+            endtry
         else  " start logging
             if empty(s:logfile)  " can't log without logfile!
                 throw 'No log file path has been set'
             endif
-            call s:log('Started autocmd log (' . l:date . ')')
+            try
+                call s:log('Started autocmd log (' . l:date . ')')
+            catch
+                let l:abort_enable = 1
+                throw v:exception
+            endtry
             echomsg 'Autocmd event logging is ENABLED'
             echomsg 'Log file is ' . s:logfile
             augroup LogAutocmd
@@ -135,7 +144,11 @@ function! dn#log_autocmds#_toggle() abort
     catch
         call s:error(v:exception)
     finally  " toggle logging status
-        let s:enabled = get(s:, 'enabled', 0) ? 0 : 1
+        if l:abort_enable
+            call s:error('Unable to enable autcmds event logging')
+        else
+            let s:enabled = get(s:, 'enabled', 0) ? 0 : 1
+        endif
     endtry
 endfunction
 
