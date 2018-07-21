@@ -149,6 +149,7 @@ endfunction
 " timestamped message recording the time of logging activation.
 function! dn#log_autocmds#_logfile(path) abort
     " return if no path provided
+    echoerr 'Logfile path: >>' . a:path . '<<'
     if empty(a:path) || !a:path
         call s:error('No log file path provided')
         return
