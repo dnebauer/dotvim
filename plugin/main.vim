@@ -81,6 +81,8 @@ function s:set_logfile() abort
     endif
 endfunction
 
+call s:set_logfile()
+
 ""
 " @section Autocmd Events, events
 "
