@@ -97,18 +97,20 @@ function! s:log(message) abort
     call writefile([l:msg], s:logfile, 'a')
 endfunction
 
-" s:vim_error(exception)    {{{1
+" s:throwable(exception)    {{{1
 
 ""
 " @private
-" Extract error message from a Vim exception, else return empty string.
-function! s:vim_error(exception) abort
+" Ensure exception is re-throwable.
+" Can't re-throw Vim exception, so for those exceptions extract the error
+" message.
+function! s:throwable(exception) abort
     let l:matches = matchlist(a:exception,
                 \ '^Vim\%((\a\+)\)\=:\(E\d\+\p\+$\)')
     if !empty(l:matches) && !empty(l:matches[1])
         return l:matches[1]
     else
-        return
+        return a:exception
     endif
 endfunction
 " }}}1
@@ -145,11 +147,7 @@ function! dn#log_autocmds#_toggle() abort
                 call s:log('Started autocmd log (' . l:date . ')')
             catch
                 let l:abort_enable = 1
-                " can't re-throw Vim exception, so in that case extract error
-                let l:vim_error = s:vim_error(v:exception)
-                if   empty(l:vim_error) | throw v:exception
-                else                    | throw l:vim_error
-                endif
+                throw s:throwable(v:exception)
             endtry
             echomsg 'Autocmd event logging is ENABLED'
             echomsg 'Log file is ' . s:logfile
