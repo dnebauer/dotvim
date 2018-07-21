@@ -130,7 +130,7 @@ function! dn#log_autocmds#_toggle() abort
                 call s:log('Started autocmd log (' . l:date . ')')
             catch
                 let l:abort_enable = 1
-                throw v:exception
+                call s:error(v:exception)
             endtry
             echomsg 'Autocmd event logging is ENABLED'
             echomsg 'Log file is ' . s:logfile
