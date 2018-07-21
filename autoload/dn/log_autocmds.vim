@@ -128,8 +128,16 @@ function! dn#log_autocmds#_toggle() abort
             endif
             try
                 call s:log('Started autocmd log (' . l:date . ')')
-            catch
+            catch /^Vim\%((\a\+)\)\=:E/
                 let l:abort_enable = 1
+                let l:matches = matchlist(v:exception,
+                            \ '^Vim\%((\a\+)\)\=:\(E\d\+\p\+$\)')
+                if !empty(l:matches) && !empty(l:matches[1])
+                    throw l:matches[1]
+                else
+                    throw v:exception
+                endif
+            catch
                 call s:error(v:exception)
             endtry
             echomsg 'Autocmd event logging is ENABLED'
