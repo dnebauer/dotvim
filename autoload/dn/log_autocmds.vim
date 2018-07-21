@@ -102,14 +102,14 @@ function! dn#log_autocmds#_toggle() abort
     let l:date = strftime('%F', localtime())
     let s:enabled = get(s:, 'enabled', 0) ? 0 : 1
     if !s:enabled
-        l:path = (s:logfile) ? 'not set' : s:logfile
+        let l:path = (s:logfile) ? 'not set' : s:logfile
         echomsg 'Log file is ' . l:path
         call s:log('Stopped autocmd log (' . l:date . ')')
         return
     endif
 
     call s:log('Started autocmd log (' . l:date . ')')
-    l:path = (s:logfile) ? 'not set' : s:logfile
+    let l:path = (s:logfile) ? 'not set' : s:logfile
     echomsg 'Log file is ' . l:path
     augroup LogAutocmd
         for l:au in s:aulist
@@ -123,10 +123,10 @@ endfunction
 " Display status of autocmds event logging and the log file path.
 function! dn#log_autocmds#_status() abort
     " display logging status
-    l:status = (s:enabled) ? 'ENABLED' : 'DISABLED'
+    let l:status = (s:enabled) ? 'ENABLED' : 'DISABLED'
     echomsg 'Autocmds event logging is ' . l:status
     " display logfile
-    l:path = (s:logfile) ? 'not set' : s:logfile
+    let l:path = (s:logfile) ? 'not set' : s:logfile
     echomsg 'Log file is ' . l:path
 endfunction
 
