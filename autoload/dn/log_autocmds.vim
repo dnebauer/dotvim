@@ -80,13 +80,15 @@ endfunction
 " @private
 " Write a message to the autocmd events log file.
 function! s:log(message) abort
+    " need to have autocmd logging enabled
     if !s:enabled
         call s:error('Autocmd event logging is not enabled')
         return
     endif
+    " write log message
     silent execute '!echo "'
                 \ . strftime('%T', localtime()) . ' - ' . a:message . '"'
-                \ '>> ' . s:logfile
+                \ ' >> ' . s:logfile
 endfunction
 
 
@@ -101,16 +103,21 @@ function! dn#log_autocmds#_toggle() abort
 
     let l:date = strftime('%F', localtime())
     let s:enabled = get(s:, 'enabled', 0) ? 0 : 1
-    if !s:enabled
-        let l:path = (s:logfile) ? 'not set' : s:logfile
-        echomsg 'Log file is ' . l:path
+
+    " stop logging
+    if !s:enabled  " reversed logic because s:enabled just toggled
+        echomsg 'Log file is ' . s:logfile
         call s:log('Stopped autocmd log (' . l:date . ')')
         return
     endif
 
+    " start logging
+    if empty(s:logfile) || !s:logfile  " can't log without logfile!
+        call s:error('No log file path has been set')
+        return
+    endif
     call s:log('Started autocmd log (' . l:date . ')')
-    let l:path = (s:logfile) ? 'not set' : s:logfile
-    echomsg 'Log file is ' . l:path
+    echomsg 'Log file is ' . s:logfile
     augroup LogAutocmd
         for l:au in s:aulist
             silent execute 'autocmd' l:au '* call s:log(''' . l:au . ''')'
