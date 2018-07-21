@@ -1,119 +1,81 @@
-command! LogAutocmds call s:log_autocmds_toggle()
+" Vim global plugin for logging autocmd events
+" Last change: 2018 Jul 21
+" Maintainer: David Nebauer
+" License: CC0
 
-function! s:log_autocmds_toggle()
-  augroup LogAutocmd
-    autocmd!
-  augroup END
+if exists('g:loaded_dn_log_autocmds') | finish | endif
+let g:loaded_dn_log_autocmds = 1
 
-  let l:date = strftime('%F', localtime())
-  let s:activate = get(s:, 'activate', 0) ? 0 : 1
-  if !s:activate
-    call s:log('Stopped autocmd log (' . l:date . ')')
-    return
-  endif
+let s:save_cpo = &cpoptions
+set cpoptions&vim
 
-  call s:log('Started autocmd log (' . l:date . ')')
-  augroup LogAutocmd
-    for l:au in s:aulist
-      silent execute 'autocmd' l:au '* call s:log(''' . l:au . ''')'
-    endfor
-  augroup END
+""
+" @section Introduction, intro
+" @order intro logfile commands
+" A plugin that logs autocmd events to a log file.
+"
+" The log file location is set by default (in most cases), and can be set with a global variable or plugin command. See @section(logfile) for further details.
+"
+" Logging is off by default. It is toggled on and off with the command
+" @command(LogAutocmds). Current logging status can be displayed with the
+" command @command(AutocmdsLoggingStatus).
+"
+" User messages can be written to the log file (see command @command(AnnotateAutocmdsLog)) and the log file deleted (see command @command(DeleteAutocmdsLog)).
+
+""
+" @section Log file, logfile
+" The default log file name is "vim-autocmds-log" in the user's home
+" directory. The plugin will look for the home directory. On Windows systems
+" it will look for the variable $USERPROFILE. On all other systems it will
+" look for the variable $HOME. If the variable is found, the default log file
+" is set to "$USERPROFILE/vim-autocmds-log" or "$HOME/vim-autocmds-log".
+"
+" If the variable g:dn_autocmds_log is set at the time of plugin
+" initialisation, the log file path is set to the value of the variable.
+"
+" At any time the log file path can be changed using the
+" @command(AutocmdsLogFile).
+"
+" The plugin does not check whether the logfile path is valid. If the logfile
+" path is invalid it will result in system errors when the plugin attempts to
+" write to the log file.
+
+""
+" @private
+" Provide operating system type.
+function s:os() abort
+    if has('win32') || has ('win64') || has('win95') || has('win32unix')
+        return 'windows'
+    elseif has('unix')
+        return 'unix'
+    else
+        return 'other'
+    endif
 endfunction
 
-function! s:log(message)
-  silent execute '!echo "'
-        \ . strftime('%T', localtime()) . ' - ' . a:message . '"'
-        \ '>> /tmp/vim_log_autocommands'
+""
+" @private
+" Set default log file path.
+function s:set_logfile() abort
+    " user-set path takes precedence
+    if exists('g:dn_autocmds_log')
+        call dn#log_autocmds#_logfile(g:dn_autocmds_log)
+        return
+    endif
+    " default value
+    let l:default_file = 'vim-autocmds-log'
+    let l:os = s:os()
+    let l:logfile = ''
+    if l:os ==# 'windows' && exists('$USERPROFILE')
+        let l:logfile = $USERPROFILE . '/' . l:default_file
+    endif
+    if empty(l:logfile) && exists('$HOME')
+        let l:logfile = $HOME . '/' . l:default_file
+    endif
+    if !empty(l:logfile)
+        call dn#log_autocmds#_logfile(l:logfile)
+    endif
 endfunction
 
-" These are deliberately left out due to side effects
-" - SourceCmd
-" - FileAppendCmd
-" - FileWriteCmd
-" - BufWriteCmd
-" - FileReadCmd
-" - BufReadCmd
-" - FuncUndefined
-
-let s:aulist = [
-      \ 'BufNewFile',
-      \ 'BufReadPre',
-      \ 'BufRead',
-      \ 'BufReadPost',
-      \ 'FileReadPre',
-      \ 'FileReadPost',
-      \ 'FilterReadPre',
-      \ 'FilterReadPost',
-      \ 'StdinReadPre',
-      \ 'StdinReadPost',
-      \ 'BufWrite',
-      \ 'BufWritePre',
-      \ 'BufWritePost',
-      \ 'FileWritePre',
-      \ 'FileWritePost',
-      \ 'FileAppendPre',
-      \ 'FileAppendPost',
-      \ 'FilterWritePre',
-      \ 'FilterWritePost',
-      \ 'BufAdd',
-      \ 'BufCreate',
-      \ 'BufDelete',
-      \ 'BufWipeout',
-      \ 'BufFilePre',
-      \ 'BufFilePost',
-      \ 'BufEnter',
-      \ 'BufLeave',
-      \ 'BufWinEnter',
-      \ 'BufWinLeave',
-      \ 'BufUnload',
-      \ 'BufHidden',
-      \ 'BufNew',
-      \ 'SwapExists',
-      \ 'FileType',
-      \ 'Syntax',
-      \ 'EncodingChanged',
-      \ 'TermChanged',
-      \ 'VimEnter',
-      \ 'GUIEnter',
-      \ 'GUIFailed',
-      \ 'TermResponse',
-      \ 'QuitPre',
-      \ 'VimLeavePre',
-      \ 'VimLeave',
-      \ 'FileChangedShell',
-      \ 'FileChangedShellPost',
-      \ 'FileChangedRO',
-      \ 'ShellCmdPost',
-      \ 'ShellFilterPost',
-      \ 'CmdUndefined',
-      \ 'SpellFileMissing',
-      \ 'SourcePre',
-      \ 'VimResized',
-      \ 'FocusGained',
-      \ 'FocusLost',
-      \ 'CursorHold',
-      \ 'CursorHoldI',
-      \ 'CursorMoved',
-      \ 'CursorMovedI',
-      \ 'WinEnter',
-      \ 'WinLeave',
-      \ 'TabEnter',
-      \ 'TabLeave',
-      \ 'CmdwinEnter',
-      \ 'CmdwinLeave',
-      \ 'InsertEnter',
-      \ 'InsertChange',
-      \ 'InsertLeave',
-      \ 'InsertCharPre',
-      \ 'TextChanged',
-      \ 'TextChangedI',
-      \ 'ColorScheme',
-      \ 'RemoteReply',
-      \ 'QuickFixCmdPre',
-      \ 'QuickFixCmdPost',
-      \ 'SessionLoadPost',
-      \ 'MenuPopup',
-      \ 'CompleteDone',
-      \ 'User',
-      \ ]
-
+let &cpoptions = s:save_cpo
+unlet s:save_cpo

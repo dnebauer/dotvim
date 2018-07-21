@@ -1,0 +1,74 @@
+*dn-log-autocmds.txt*	Logs autocmd events to a log file
+David Nebauer                                                *dn-log-autocmds*
+
+==============================================================================
+CONTENTS                                            *dn-log-autocmds-contents*
+  1. Introduction......................................|dn-log-autocmds-intro|
+  2. Log file........................................|dn-log-autocmds-logfile|
+  3. Commands.......................................|dn-log-autocmds-commands|
+
+==============================================================================
+INTRODUCTION                                           *dn-log-autocmds-intro*
+
+A plugin that logs autocmd events to a log file.
+
+The log file location is set by default (in most cases), and can be set with a
+global variable or plugin command. See |dn-log-autocmds-logfile| for further
+details.
+
+Logging is off by default. It is toggled on and off with the command
+|:LogAutocmds|. Current logging status can be displayed with the command
+|:AutocmdsLoggingStatus|.
+
+User messages can be written to the log file (see command
+|:AnnotateAutocmdsLog|) and the log file deleted (see command
+|:DeleteAutocmdsLog|).
+
+==============================================================================
+LOG FILE                                             *dn-log-autocmds-logfile*
+
+The default log file name is "vim-autocmds-log" in the user's home directory.
+The plugin will look for the home directory. On Windows systems it will look
+for the variable $USERPROFILE. On all other systems it will look for the
+variable $HOME. If the variable is found, the default log file is set to
+"$USERPROFILE/vim-autocmds-log" or "$HOME/vim-autocmds-log".
+
+If the variable g:dn_autocmds_log is set at the time of plugin initialisation,
+the log file path is set to the value of the variable.
+
+At any time the log file path can be changed using the |:AutocmdsLogFile|.
+
+The plugin does not check whether the logfile path is valid. If the logfile
+path is invalid it will result in system errors when the plugin attempts to
+write to the log file.
+
+==============================================================================
+COMMANDS                                            *dn-log-autocmds-commands*
+
+:LogAutocmds                                                    *:LogAutocmds*
+  Toggle logging of autocmd events.
+
+:AutocmdsLoggingStatus                                *:AutocmdsLoggingStatus*
+  Get status of autocmd event logging, i.e., whether it is enabled or not, and
+  display the log file path.
+
+:AutocmdsLogFile {path}                                     *:AutocmdsLogFile*
+  Log future autocmd events and notes to file {path}.
+
+  If {path} is the name of the current log file, the command will have no
+  effect. If the plugin is currently logging to a different file, that file is
+  closed and the new log file opened.
+
+  If the {path} is invalid or unwritable an error will occur when the plugin
+  next attempts to write to the log. If logging is enabled when this command
+  is used, the plugin tries to write to the file immediately with a
+  timestamped message recording the time of logging activation.
+
+:AnnotateAutocmdsLog {message}                          *:AnnotateAutocmdsLog*
+  Write {message} to the log file on its own line.
+
+:DeleteAutocmdsLog                                        *:DeleteAutocmdsLog*
+  Delete log file if it exists.
+
+
+vim:tw=78:ts=8:ft=help:norl:
