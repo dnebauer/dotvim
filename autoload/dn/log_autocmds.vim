@@ -90,7 +90,6 @@ endfunction
 " Toggle autocmds logging on and off. Writes a timestamped message to the log
 " file.
 function! dn#log_autocmds#_toggle() abort
-    echo ' ' |  " ensure user feedback starts on next line
     augroup LogAutocmd
         autocmd!
     augroup END
@@ -100,12 +99,14 @@ function! dn#log_autocmds#_toggle() abort
     try
         if s:enabled  " stop logging
             echomsg 'Log file is ' . s:logfile
+            echomsg 'Autocmd event logging is DISABLED'
             call s:log('Stopped autocmd log (' . l:date . ')')
         else  " start logging
             if empty(s:logfile)  " can't log without logfile!
                 throw 'No log file path has been set'
             endif
             call s:log('Started autocmd log (' . l:date . ')')
+            echomsg 'Autocmd event logging is ENABLED'
             echomsg 'Log file is ' . s:logfile
             augroup LogAutocmd
                 for l:au in s:aulist
@@ -125,7 +126,6 @@ endfunction
 " @private
 " Display status of autocmds event logging and the log file path.
 function! dn#log_autocmds#_status() abort
-    echo ' ' |  " ensure user feedback starts on next line
     " display logging status
     let l:status = (s:enabled) ? 'ENABLED' : 'DISABLED'
     echomsg 'Autocmds event logging is ' . l:status
@@ -145,7 +145,6 @@ endfunction
 " is invoked, the plugin tries to write to the file immediately with a
 " timestamped message recording the time of logging activation.
 function! dn#log_autocmds#_logfile(path) abort
-    echo ' ' |  " ensure user feedback starts on next line
     " return if no path provided
     if empty(a:path)
         call s:error('No log file path provided')
@@ -172,7 +171,6 @@ endfunction
 " Write message to log file. Requires autocmd event logging to be enabled; if
 " it is not, an error message is displayed.
 function! dn#log_autocmds#_annotate(message) abort
-    echo ' ' |  " ensure user feedback starts on next line
     " return if no message provided
     if empty(a:message)
         call s:error('No log message provided')
@@ -191,7 +189,6 @@ endfunction
 " @private
 " Delete log file if it exists.
 function! dn#log_autocmds#_delete() abort
-    echo ' ' |  " ensure user feedback starts on next line
     if s:enabled
         call dn#log_autocmds#_toggle()
     endif
