@@ -198,7 +198,7 @@ function! dn#log_autocmds#_delete() abort
             call add(l:errors, 'Log file was not deleted')
         endif
         if !empty(l:errors)
-            insert(l:errors, 'Log file: ' . s:logfile)
+            call insert(l:errors, 'Log file: ' . s:logfile)
             call s:error(join(l:errors, "\n"))
         endif
     endif
