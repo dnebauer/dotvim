@@ -201,7 +201,9 @@ function! dn#log_autocmds#_delete() abort
         if filewritable(s:logfile)
             call add(l:errors, 'Log file was not deleted')
         endif
-        if !empty(l:errors)
+        if empty(l:errors)  " presume success
+            echomsg 'Deleted ' s:logfile
+        else  " there were problems
             call insert(l:errors, 'Log file: ' . s:logfile)
             call s:error(join(l:errors, "\n"))
         endif
