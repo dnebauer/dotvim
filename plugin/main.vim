@@ -3,11 +3,14 @@
 " Maintainer: David Nebauer
 " License: CC0
 
+" Housekeeping    {{{1
 if exists('g:loaded_dn_log_autocmds') | finish | endif
 let g:loaded_dn_log_autocmds = 1
 
 let s:save_cpo = &cpoptions
 set cpoptions&vim
+
+" Introduction to plugin   {{{1
 
 ""
 " @section Introduction, intro
@@ -24,7 +27,11 @@ set cpoptions&vim
 " @command(LogAutocmds). Current logging status can be displayed with the
 " command @command(AutocmdsLoggingStatus).
 "
-" User messages can be written to the log file (see command @command(AnnotateAutocmdsLog)) and the log file deleted (see command @command(DeleteAutocmdsLog)).
+" User messages can be written to the log file (see command
+" @command(AnnotateAutocmdsLog)) and the log file deleted (see command
+" @command(DeleteAutocmdsLog)).
+
+" Explain logfile path    {{{1
 
 ""
 " @section Log file, logfile
@@ -43,6 +50,8 @@ set cpoptions&vim
 " The plugin does not check whether the logfile path is valid. If the logfile
 " path is invalid it will result in system errors when the plugin attempts to
 " write to the log file.
+
+" Set default log file    {{{1
 
 ""
 " @private
@@ -83,6 +92,8 @@ endfunction
 
 call s:set_logfile()
 
+" Explain autocmd events    {{{1
+
 ""
 " @section Autocmd Events, events
 "
@@ -113,5 +124,10 @@ call s:set_logfile()
 " If an autocmd event does not appear in either list above, it has been
 " missed!
 
+" Housekeeping    {{{1
+
 let &cpoptions = s:save_cpo
 unlet s:save_cpo
+" }}}1
+
+" vim: set foldmethod=marker :

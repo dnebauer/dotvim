@@ -1,3 +1,6 @@
+" Script variables
+
+" s:aulist  - events to log    {{{1
 ""
 " Autocmd events to log.
 "
@@ -52,6 +55,8 @@ let s:aulist = [
             \ 'WinLeave',
             \ ]
 
+" s:logfile - path of log file    {{{1
+
 ""
 " Log file path.
 "
@@ -60,12 +65,18 @@ let s:aulist = [
 " "vim-autocmds-log" in the user's home directory.
 let s:logfile = ''
 
+" s:enabled - logging status    {{{1
+
 ""
 " Autocmd logging status.
 "
 " Whether autocmd event logging is currently enabled.
 let s:enabled = 0
+" }}}1
 
+" Script functions
+
+" s:error(message)    {{{1
 
 ""
 " @private
@@ -76,6 +87,8 @@ function! s:error(message) abort
     echohl Normal
 endfunction
 
+" s:log(message)    {{{1
+
 ""
 " @private
 " Write a message to the autocmd events log file.
@@ -83,7 +96,11 @@ function! s:log(message) abort
     let l:msg = strftime('%T', localtime()) . ' - ' . a:message
     call writefile([l:msg], s:logfile, 'a')
 endfunction
+" }}}1
 
+" Private functions
+
+" dn#log_autocmds#_toggle()    {{{1
 
 ""
 " @private
@@ -122,6 +139,8 @@ function! dn#log_autocmds#_toggle() abort
     endtry
 endfunction
 
+" dn#log_autocmds#_status()    {{{1
+
 ""
 " @private
 " Display status of autocmds event logging and the log file path.
@@ -133,6 +152,8 @@ function! dn#log_autocmds#_status() abort
     let l:path = (s:logfile) ? 'not set' : s:logfile
     echomsg 'Log file is ' . l:path
 endfunction
+
+" dn#log_autocmds#_logfile(path)    {{{1
 
 ""
 " @private
@@ -166,6 +187,8 @@ function! dn#log_autocmds#_logfile(path) abort
     endif
 endfunction
 
+" dn#log_autocmds#_annotate(message)    {{{1
+
 ""
 " @private
 " Write message to log file. Requires autocmd event logging to be enabled; if
@@ -184,6 +207,8 @@ function! dn#log_autocmds#_annotate(message) abort
     " log message
     call s:log(a:message)
 endfunction
+
+" dn#log_autocmds#_delete()    {{{1
 
 ""
 " @private
@@ -211,5 +236,6 @@ function! dn#log_autocmds#_delete() abort
         echomsg "Can't find " . s:logfile . ' to delete'
     endif
 endfunction
+" }}}1
 
 " vim: set foldmethod=marker :
