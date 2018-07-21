@@ -80,17 +80,8 @@ endfunction
 " @private
 " Write a message to the autocmd events log file.
 function! s:log(message) abort
-    " need to have autocmd logging enabled
-    if !s:enabled
-        call s:error('Autocmd event logging is not enabled')
-        return
-    endif
-    " write log message
-    "silent execute '!echo "'
-    "            \ . strftime('%T', localtime()) . ' - ' . a:message . '"'
-    "            \ ' >> ' . s:logfile
-    let l:msg = [strftime('%T', localtime()) . ' - ' . a:message]
-    call writefile(l:msg, s:logfile, 'a')
+    let l:msg = strftime('%T', localtime()) . ' - ' . a:message
+    call writefile([l:msg], s:logfile, 'a')
 endfunction
 
 
