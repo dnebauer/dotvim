@@ -96,6 +96,21 @@ function! s:log(message) abort
     let l:msg = strftime('%T', localtime()) . ' - ' . a:message
     call writefile([l:msg], s:logfile, 'a')
 endfunction
+
+" s:vim_error(exception)    {{{1
+
+""
+" @private
+" Extract error message from a Vim exception, else return empty string.
+function! s:vim_error(exception) abort
+    let l:matches = matchlist(a:exception,
+                \ '^Vim\%((\a\+)\)\=:\(E\d\+\p\+$\)')
+    if !empty(l:matches) && !empty(l:matches[1])
+        return l:matches[1]
+    else
+        return
+    endif
+endfunction
 " }}}1
 
 " Private functions
@@ -128,17 +143,13 @@ function! dn#log_autocmds#_toggle() abort
             endif
             try
                 call s:log('Started autocmd log (' . l:date . ')')
-            catch /^Vim\%((\a\+)\)\=:E/
-                let l:abort_enable = 1
-                let l:matches = matchlist(v:exception,
-                            \ '^Vim\%((\a\+)\)\=:\(E\d\+\p\+$\)')
-                if !empty(l:matches) && !empty(l:matches[1])
-                    throw l:matches[1]
-                else
-                    throw v:exception
-                endif
             catch
-                call s:error(v:exception)
+                let l:abort_enable = 1
+                " can't re-throw Vim exception, so in that case extract error
+                let l:vim_error = s:vim_error(v:exception)
+                if   empty(l:vim_error) | throw v:exception
+                else                    | throw l:vim_error
+                endif
             endtry
             echomsg 'Autocmd event logging is ENABLED'
             echomsg 'Log file is ' . s:logfile
