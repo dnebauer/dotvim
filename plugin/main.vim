@@ -76,6 +76,7 @@ function s:set_logfile() abort
     if empty(l:logfile) && exists('$HOME')
         let l:logfile = $HOME . '/' . l:default_file
     endif
+    echoerr 'Logfile value: >>' . l:logfile . '<<'
     if !empty(l:logfile)
         call dn#log_autocmds#_logfile(l:logfile)
     endif
