@@ -54,14 +54,17 @@ let s:aulist = [
 
 ""
 " Log file path.
+"
 " Can be set from variable g:dn_autocmds_log or by command
 " @command(AutocmdsLogFile). Otherwise defaults to file named
 " "vim-autocmds-log" in the user's home directory.
 let s:logfile = ''
 
 ""
+" Autocmd logging status.
+"
 " Whether autocmd event logging is currently enabled.
-let s:activated = 0
+let s:enabled = 0
 
 
 ""
@@ -77,7 +80,7 @@ endfunction
 " @private
 " Write a message to the autocmd events log file.
 function! s:log(message) abort
-    if !s:activated
+    if !s:enabled
         call s:error('Autocmd event logging is not enabled')
         return
     endif
@@ -97,8 +100,8 @@ function! dn#log_autocmds#_toggle() abort
     augroup END
 
     let l:date = strftime('%F', localtime())
-    let s:activated = get(s:, 'activated', 0) ? 0 : 1
-    if !s:activated
+    let s:enabled = get(s:, 'enabled', 0) ? 0 : 1
+    if !s:enabled
         l:path = (s:logfile) ? 'not set' : s:logfile
         echomsg 'Log file is ' . l:path
         call s:log('Stopped autocmd log (' . l:date . ')')
@@ -120,7 +123,7 @@ endfunction
 " Display status of autocmds event logging and the log file path.
 function! dn#log_autocmds#_status() abort
     " display logging status
-    l:status = (s:activated) ? 'ENABLED' : 'DISABLED'
+    l:status = (s:enabled) ? 'ENABLED' : 'DISABLED'
     echomsg 'Autocmds event logging is ' . l:status
     " display logfile
     l:path = (s:logfile) ? 'not set' : s:logfile
@@ -149,12 +152,12 @@ function! dn#log_autocmds#_logfile(path) abort
         return
     endif
     " okay, set logfile path
-    let l:activated = s:activated
-    if l:activated
+    let l:enabled = s:enabled
+    if l:enabled
         call dn#log_autocmds#_toggle()
     endif
     let s:logfile = l:path
-    if l:activated
+    if l:enabled
         call dn#log_autocmds#_toggle()
     endif
 endfunction
@@ -170,7 +173,7 @@ function! dn#log_autocmds#_annotate(message) abort
         return
     endif
     " display error if not currently logging
-    if !s:activated
+    if !s:enabled
         call s:error('Autocmd event logging is not enabled')
         return
     endif
@@ -182,7 +185,7 @@ endfunction
 " @private
 " Delete log file if it exists.
 function! dn#log_autocmds#_delete() abort
-    if s:activated
+    if s:enabled
         call dn#log_autocmds#_toggle()
     endif
     if filewritable(s:logfile)

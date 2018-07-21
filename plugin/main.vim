@@ -11,10 +11,14 @@ set cpoptions&vim
 
 ""
 " @section Introduction, intro
-" @order intro logfile commands
+" @order intro logfile events commands
 " A plugin that logs autocmd events to a log file.
 "
-" The log file location is set by default (in most cases), and can be set with a global variable or plugin command. See @section(logfile) for further details.
+" The log file location is set by default (in most cases), and can be set with
+" a global variable or plugin command. See @section(logfile) for further
+" details.
+"
+" Not all events are logged. See @section(events) for further details.
 "
 " Logging is off by default. It is toggled on and off with the command
 " @command(LogAutocmds). Current logging status can be displayed with the
@@ -76,6 +80,36 @@ function s:set_logfile() abort
         call dn#log_autocmds#_logfile(l:logfile)
     endif
 endfunction
+
+""
+" @section Autocmd Events, events
+"
+" The following events are logged:
+"
+" BufAdd, BufCreate, BufDelete, BufEnter, BufFilePost, BufFilePre, BufHidden,
+" BufLeave, BufNew, BufNewFile, BufRead, BufReadPost, BufReadPre, BufUnload,
+" BufWinEnter, BufWinLeave, BufWipeout, BufWrite, BufWritePost, BufWritePre,
+" CmdUndefined, CmdwinEnter, CmdwinLeave, ColorScheme, CompleteDone,
+" CursorHold, CursorHoldI, CursorMoved, CursorMovedI, EncodingChanged,
+" FileAppendPost, FileAppendPre, FileChangedRO, FileChangedShell,
+" FileChangedShellPost, FileReadPost, FileReadPre, FileType, FileWritePost,
+" FileWritePre, FilterReadPost, FilterReadPre, FilterWritePost,
+" FilterWritePre, FocusGained, FocusLost, GUIEnter, GUIFailed, InsertChange,
+" InsertCharPre, InsertEnter, InsertLeave, MenuPopup, QuickFixCmdPost,
+" QuickFixCmdPre, QuitPre, RemoteReply, SessionLoadPost, ShellCmdPost,
+" ShellFilterPost, SourcePre, SpellFileMissing, StdinReadPost, StdinReadPre,
+" SwapExists, Syntax, TabEnter, TabLeave, TermChanged, TermResponse,
+" TextChanged, TextChangedI, User, VimEnter, VimLeave, VimLeavePre,
+" VimResized, WinEnter, and WinLeave.
+"
+" The following events are intentionally not logged because, according to the
+" original project, they resulted in "side effects":
+"
+" BufReadCmd, BufWriteCmd, FileAppendCmd, FileReadCmd, FileWriteCmd,
+" FuncUndefined, and SourceCmd.
+" 
+" If an autocmd event does not appear in either list above, it has been
+" missed!
 
 let &cpoptions = s:save_cpo
 unlet s:save_cpo

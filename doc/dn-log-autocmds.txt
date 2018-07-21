@@ -5,7 +5,8 @@ David Nebauer                                                *dn-log-autocmds*
 CONTENTS                                            *dn-log-autocmds-contents*
   1. Introduction......................................|dn-log-autocmds-intro|
   2. Log file........................................|dn-log-autocmds-logfile|
-  3. Commands.......................................|dn-log-autocmds-commands|
+  3. Autocmd Events...................................|dn-log-autocmds-events|
+  4. Commands.......................................|dn-log-autocmds-commands|
 
 ==============================================================================
 INTRODUCTION                                           *dn-log-autocmds-intro*
@@ -15,6 +16,8 @@ A plugin that logs autocmd events to a log file.
 The log file location is set by default (in most cases), and can be set with a
 global variable or plugin command. See |dn-log-autocmds-logfile| for further
 details.
+
+Not all events are logged. See |dn-log-autocmds-events| for further details.
 
 Logging is off by default. It is toggled on and off with the command
 |:LogAutocmds|. Current logging status can be displayed with the command
@@ -41,6 +44,35 @@ At any time the log file path can be changed using the |:AutocmdsLogFile|.
 The plugin does not check whether the logfile path is valid. If the logfile
 path is invalid it will result in system errors when the plugin attempts to
 write to the log file.
+
+==============================================================================
+AUTOCMD EVENTS                                        *dn-log-autocmds-events*
+
+
+The following events are logged:
+
+BufAdd, BufCreate, BufDelete, BufEnter, BufFilePost, BufFilePre, BufHidden,
+BufLeave, BufNew, BufNewFile, BufRead, BufReadPost, BufReadPre, BufUnload,
+BufWinEnter, BufWinLeave, BufWipeout, BufWrite, BufWritePost, BufWritePre,
+CmdUndefined, CmdwinEnter, CmdwinLeave, ColorScheme, CompleteDone, CursorHold,
+CursorHoldI, CursorMoved, CursorMovedI, EncodingChanged, FileAppendPost,
+FileAppendPre, FileChangedRO, FileChangedShell, FileChangedShellPost,
+FileReadPost, FileReadPre, FileType, FileWritePost, FileWritePre,
+FilterReadPost, FilterReadPre, FilterWritePost, FilterWritePre, FocusGained,
+FocusLost, GUIEnter, GUIFailed, InsertChange, InsertCharPre, InsertEnter,
+InsertLeave, MenuPopup, QuickFixCmdPost, QuickFixCmdPre, QuitPre, RemoteReply,
+SessionLoadPost, ShellCmdPost, ShellFilterPost, SourcePre, SpellFileMissing,
+StdinReadPost, StdinReadPre, SwapExists, Syntax, TabEnter, TabLeave,
+TermChanged, TermResponse, TextChanged, TextChangedI, User, VimEnter,
+VimLeave, VimLeavePre, VimResized, WinEnter, and WinLeave.
+
+The following events are intentionally not logged because, according to the
+original project, they resulted in "side effects":
+
+BufReadCmd, BufWriteCmd, FileAppendCmd, FileReadCmd, FileWriteCmd,
+FuncUndefined, and SourceCmd.
+
+If an autocmd event does not appear in either list above, it has been missed!
 
 ==============================================================================
 COMMANDS                                            *dn-log-autocmds-commands*
