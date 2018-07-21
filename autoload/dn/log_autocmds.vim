@@ -207,6 +207,8 @@ function! dn#log_autocmds#_delete() abort
             call insert(l:errors, 'Log file: ' . s:logfile)
             call s:error(join(l:errors, "\n"))
         endif
+    else  " can't find writable log file, so presume doesn't exist
+        echomsg "Can't find " . s:logfile . ' to delete'
     endif
 endfunction
 
