@@ -86,9 +86,11 @@ function! s:log(message) abort
         return
     endif
     " write log message
-    silent execute '!echo "'
-                \ . strftime('%T', localtime()) . ' - ' . a:message . '"'
-                \ ' >> ' . s:logfile
+    "silent execute '!echo "'
+    "            \ . strftime('%T', localtime()) . ' - ' . a:message . '"'
+    "            \ ' >> ' . s:logfile
+    let l:msg = [strftime('%T', localtime()) . ' - ' . a:message]
+    call writefile(l:msg, s:logfile, 'a')
 endfunction
 
 
