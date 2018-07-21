@@ -72,7 +72,7 @@ let s:enabled = 0
 " Display error message.
 function! s:error(message) abort
     echohl Error
-    echo a:message
+    echo "\n" . a:message
     echohl Normal
 endfunction
 
