@@ -112,7 +112,7 @@ function! dn#log_autocmds#_toggle() abort
     endif
 
     " start logging
-    if empty(s:logfile) || !s:logfile  " can't log without logfile!
+    if empty(s:logfile)  " can't log without logfile!
         call s:error('No log file path has been set')
         return
     endif
@@ -149,9 +149,8 @@ endfunction
 " timestamped message recording the time of logging activation.
 function! dn#log_autocmds#_logfile(path) abort
     " return if no path provided
-    if empty(a:path) || !a:path
+    if empty(a:path)
         call s:error('No log file path provided')
-        echoerr 'Logfile path: >>' . a:path . '<<'
         return
     endif
     " no action required if log file path already set to this value
@@ -176,7 +175,7 @@ endfunction
 " it is not, an error message is displayed.
 function! dn#log_autocmds#_annotate(message) abort
     " return if no message provided
-    if empty(a:message) || !a:message
+    if empty(a:message)
         call s:error('No log message provided')
         return
     endif
