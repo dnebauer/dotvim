@@ -96,7 +96,6 @@ call s:set_logfile()
 
 ""
 " @section Autocmd Events, events
-"
 " The following events are logged:
 "
 " BufAdd, BufCreate, BufDelete, BufEnter, BufFilePost, BufFilePre, BufHidden,
