@@ -114,7 +114,7 @@ function! s:log(message) abort
     " write messages
     " - writefile() throws error and exits function if invalid filepath, but
     "   just in case throw manual error if error code returned by writefile()
-    let l:result = writefile([l:entries], s:logfile, 'a')
+    let l:result = writefile(l:entries, s:logfile, 'a')
     if l:result != 0 | throw 'Autocmds log write operation failed' | endif
 endfunction
 
