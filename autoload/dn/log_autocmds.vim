@@ -191,7 +191,7 @@ function! dn#log_autocmds#_enable() abort
 
     " write log message
     try
-        call s:log([repeat('*', 40), 'Started autocmd event logging'])
+        call s:log([repeat('−', 40), 'Started autocmd event logging'])
     catch
         call s:error(s:exception_error(v:exception))
         return
