@@ -163,7 +163,7 @@ endfunction
 " @private
 " Toggle autocmds logging on and off.
 function! dn#log_autocmds#_toggle() abort
-    if   s:enabled | call dn#log_autocmds#_disable()
+    if   s:enabled | call dn#log_autocmds#_disable(1)
     else           | call dn#log_autocmds#_enable()
     endif
 endfunction
@@ -219,14 +219,9 @@ endfunction
 " @private
 " Toggle autocmds logging on and off.
 "
-" Writes a timestamped message to the log file unless [suppress_write] is
-" present and true, i.e., default is to write log.
-" @default suppress_write=false
-function! dn#log_autocmds#_disable(...) abort
-    " process args
-    " - note logic flip from suppress_write to write_log
-    let l:write_log = (a:0 && a:1) ? 0 : 1
-
+" Attempts to writes a timestamped message to the log file but ignores any
+" errors that occur.
+function! dn#log_autocmds#_disable() abort
     " clear previously set autocmds
     augroup LogAutocmd
         autocmd!
@@ -235,15 +230,13 @@ function! dn#log_autocmds#_disable(...) abort
     " set flag to false
     let s:enabled = 0
 
-    " write log if required, ignoring any errors
-    if l:write_log
-        let l:msg = 'Stopped autocmd event logging'
-        let l:div = repeat('·', len(l:msg))
-        try
-            call s:log([l:msg, l:div])
-        catch
-        endtry
-    endif
+    " write log, ignoring any errors
+    let l:msg = 'Stopped autocmd event logging'
+    let l:div = repeat('·', len(l:msg))
+    try
+        call s:log([l:msg, l:div])
+    catch
+    endtry
 
     " provide feedback
     echomsg 'Log file is ' . s:logfile
@@ -269,9 +262,11 @@ endfunction
 ""
 " @private
 " Log future autocmd events and notes to file {path}.
+"
 " If {path} is the name of the current log file, the function has no
 " effect. If the plugin is currently logging to a different file, that file is
 " closed and the new log file opened.
+"
 " If the {path} is invalid or unwritable an error will occur when the plugin
 " next attempts to write to the log. If logging is enabled when this function
 " is invoked, the plugin tries to write to the file immediately with a
@@ -290,11 +285,11 @@ function! dn#log_autocmds#_logfile(path) abort
     " okay, set logfile path
     let l:enabled = s:enabled
     if l:enabled
-        call dn#log_autocmds#_toggle()
+        call dn#log_autocmds#_disable(1)
     endif
     let s:logfile = l:path
     if l:enabled
-        call dn#log_autocmds#_toggle()
+        call dn#log_autocmds#_enable()
     endif
 endfunction
 
@@ -326,7 +321,7 @@ endfunction
 " Delete log file if it exists.
 function! dn#log_autocmds#_delete() abort
     if s:enabled
-        call dn#log_autocmds#_toggle()
+        call dn#log_autocmds#_disable(1)
     endif
     if filewritable(s:logfile)
         let l:result = delete(s:logfile)
