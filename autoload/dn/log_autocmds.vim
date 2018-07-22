@@ -330,7 +330,7 @@ function! dn#log_autocmds#_delete() abort
     endif
     let l:result = delete(s:logfile)
     let l:errors = []
-    if l:result != 0
+    if l:result != 0  " function reported error
         call add(l:errors, 'Operating system reported delete error')
         if !empty(glob(s:logfile))  " found
             call add(l:errors, 'Log file was not deleted')
@@ -340,7 +340,7 @@ function! dn#log_autocmds#_delete() abort
         endif
     endif
     if empty(l:errors)  " presume success
-        echomsg 'Deleted ' . s:logfile
+        echomsg 'Deleted log file ' . s:logfile
     else  " there were problems
         call insert(l:errors, 'Log file is ' . s:logfile)
         for l:error in l:errors | call s:error(l:error) | endfor
