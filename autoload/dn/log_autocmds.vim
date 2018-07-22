@@ -321,9 +321,9 @@ endfunction
 " Delete log file if it exists.
 "
 " The problem with handling the return error code is that there is no
-" definitive way within vim to determine whether file exists or not: the best
-" method is filereadable(), but it can fail due to restrictive file
-" permissions. This shouldn't be a problem in practice, but it is annoying...
+" definitive way within vim to determine whether file exists or not: glob()
+" will find even unreadable files, but not if they are in directories for
+" which the user has no execute permissions. 
 function! dn#log_autocmds#_delete() abort
     if s:enabled
         call dn#log_autocmds#_disable()
@@ -333,18 +333,17 @@ function! dn#log_autocmds#_delete() abort
     if l:result != 0
         call add(l:errors, 'Operating system reported delete error')
     endif
-    if filereadable(s:logfile)
+    if !empty(glob(s:logfile))  " found
         call add(l:errors, 'Log file was not deleted')
-    else
-        call add(l:errors, 'Perhaps log file was deleted previously?')
+    else  " not found (see function description above for caveats)
+        call add(l:errors,
+                    \ 'File does not exist or is in a restricted directory')
     endif
     if empty(l:errors)  " presume success
         echomsg 'Deleted ' s:logfile
     else  " there were problems
         call insert(l:errors, 'Log file: ' . s:logfile)
-        for l:error in l:errors
-            call s:error(l:error)
-        endfor
+        for l:error in l:errors | call s:error(l:error) | endfor
     endif
 endfunction
 " }}}1
