@@ -332,12 +332,12 @@ function! dn#log_autocmds#_delete() abort
     let l:errors = []
     if l:result != 0
         call add(l:errors, 'Operating system reported delete error')
-    endif
-    if !empty(glob(s:logfile))  " found
-        call add(l:errors, 'Log file was not deleted')
-    else  " not found (see function description above for caveats)
-        call add(l:errors,
-                    \ 'File does not exist or is in a restricted directory')
+        if !empty(glob(s:logfile))  " found
+            call add(l:errors, 'Log file was not deleted')
+        else  " not found (see function description above for caveats)
+            let l:msg = 'File does not exist or is in a restricted directory'
+            call add(l:errors, l:msg)
+        endif
     endif
     if empty(l:errors)  " presume success
         echomsg 'Deleted ' s:logfile
