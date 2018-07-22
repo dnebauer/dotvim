@@ -190,8 +190,10 @@ function! dn#log_autocmds#_enable() abort
     endif
 
     " write log message
+    let l:msg = 'Started autocmd event logging'
+    let l:div = repeat('—', 29)
     try
-        call s:log([repeat('—', 29), 'Started autocmd event logging'])
+        call s:log([l:div, l:msg])
     catch
         call s:error(s:exception_error(v:exception))
         return
@@ -235,8 +237,10 @@ function! dn#log_autocmds#_disable(...) abort
 
     " write log if required, ignoring any errors
     if l:write_log
+        let l:msg = 'Stopped autocmd event logging'
+        let l:div = repeat('·', len(l:msg))
         try
-            call s:log(['Stopped autocmd event logging', repeat('·', 29)])
+            call s:log([l:msg, l:div])
         catch
         endtry
     endif
