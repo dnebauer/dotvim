@@ -319,6 +319,11 @@ endfunction
 ""
 " @private
 " Delete log file if it exists.
+"
+" The problem with handling the return error code is that there is no
+" definitive way within vim to determine whether file exists or not: the best
+" method is filereadable(), but it can fail due to restrictive file
+" permissions. This shouldn't be a problem in practice, but it is annoying...
 function! dn#log_autocmds#_delete() abort
     if s:enabled
         call dn#log_autocmds#_disable()
@@ -337,7 +342,9 @@ function! dn#log_autocmds#_delete() abort
         echomsg 'Deleted ' s:logfile
     else  " there were problems
         call insert(l:errors, 'Log file: ' . s:logfile)
-        call s:error(join(l:errors, "\n"))
+        for l:error in l:errors
+            call s:error(l:error)
+        endfor
     endif
 endfunction
 " }}}1
