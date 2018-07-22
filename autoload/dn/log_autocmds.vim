@@ -340,7 +340,7 @@ function! dn#log_autocmds#_delete() abort
         endif
     endif
     if empty(l:errors)  " presume success
-        echomsg 'Deleted ' s:logfile
+        echomsg 'Deleted ' . s:logfile
     else  " there were problems
         call insert(l:errors, 'Log file is ' . s:logfile)
         for l:error in l:errors | call s:error(l:error) | endfor
