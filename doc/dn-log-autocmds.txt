@@ -48,7 +48,6 @@ write to the log file.
 ==============================================================================
 AUTOCMD EVENTS                                        *dn-log-autocmds-events*
 
-
 The following events are logged:
 
 BufAdd, BufCreate, BufDelete, BufEnter, BufFilePost, BufFilePre, BufHidden,
