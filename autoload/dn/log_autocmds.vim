@@ -236,7 +236,7 @@ function! dn#log_autocmds#_disable(...) abort
     " write log if required, ignoring any errors
     if l:write_log
         try
-            call s:log([repeat('*', 40), 'Stopped autocmd event logging'])
+            call s:log(['Stopped autocmd event logging', repeat('*', 40)])
         catch
         endtry
     endif
