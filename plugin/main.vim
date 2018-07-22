@@ -1,5 +1,5 @@
 " Vim global plugin for logging autocmd events
-" Last change: 2018 Jul 21
+" Last change: 2018 Jul 23
 " Maintainer: David Nebauer
 " License: CC0
 
