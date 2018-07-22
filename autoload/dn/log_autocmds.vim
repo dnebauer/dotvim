@@ -91,27 +91,67 @@ endfunction
 
 ""
 " @private
-" Write a message to the autocmd events log file.
+" Write a {message} or messages to the autocmd events log file. Accepts a
+" single string or list of strings.
+" @throws CantCreateFile if invalid logfile
 function! s:log(message) abort
-    let l:msg = strftime('%T', localtime()) . ' - ' . a:message
-    call writefile([l:msg], s:logfile, 'a')
+    " process args
+    " - message can't be empty
+    if empty(a:message)
+        call s:error('Empty message sent for writing to log')
+        return
+    endif
+    " - handle multiple messages; assume end up with list of strings
+    let l:messages = []
+    if   type(a:message) == v:t_string | call add(l:messages, a:message)
+    else                               | call extend(l:messages, a:message)
+    endif
+    " add date-time message prefix if strftime() is available
+    let l:format = '%Y-%m-%d %H:%M:%S'
+    let l:prefix = exists('*strftime') ? strftime(l:format) . ' - '
+                \                      : ''
+    let l:entries = map(l:messages, 'l:prefix . v:val')
+    " write messages
+    " - writefile() throws error and exits function if invalid filepath, but
+    "   just in case throw manual error if error code returned by writefile()
+    let l:result = writefile([l:entries], s:logfile, 'a')
+    if l:result != 0 | throw 'Autocmds log write operation failed' | endif
 endfunction
 
-" s:throwable(exception)    {{{1
+" s:log_or_disable(message)    {{{1
 
 ""
 " @private
-" Ensure exception is re-throwable.
-" Can't re-throw Vim exception, so for those exceptions extract the error
-" message.
-function! s:throwable(exception) abort
+" If exception thrown by write operation, disable log writing.
+function! s:log_or_disable(message) abort
+    try
+        call s:log(a:message)
+    catch
+        call s:error(s:exception_error(v:exception))
+        call dn#log_autocmds#_disable(1)  " disable without log write
+    endtry
+endfunction
+
+" s:exception_error(exception)    {{{1
+
+""
+" @private
+" Extracts error message from Vim exceptions. Other exceptions are returned
+" unaltered.
+"
+" This is useful because vim will not allow Vim errors to be re-thrown. If all
+" errors are processed by this function before re-throwing them, there is no
+" chance of the re-throw causing this failure.
+"
+" It also makes the errors a little more easy to read since the Vim context is
+" removed. (This context provides little troubleshooting assistance in simple
+" scripts.) For that reason this function may usefully be used in processing
+" all exceptions before operating on them.
+function! s:exception_error(exception) abort
     let l:matches = matchlist(a:exception,
                 \ '^Vim\%((\a\+)\)\=:\(E\d\+\p\+$\)')
-    if !empty(l:matches) && !empty(l:matches[1])
-        return l:matches[1]
-    else
-        return a:exception
-    endif
+    return (!empty(l:matches) && !empty(l:matches[1])) ? l:matches[1]
+                \                                      : a:exception
 endfunction
 " }}}1
 
@@ -121,52 +161,89 @@ endfunction
 
 ""
 " @private
-" Toggle autocmds logging on and off. Writes a timestamped message to the log
-" file.
+" Toggle autocmds logging on and off.
 function! dn#log_autocmds#_toggle() abort
+    if   s:enabled | call dn#log_autocmds#_disable()
+    else           | call dn#log_autocmds#_enable()
+    endif
+endfunction
+
+" dn#log_autocmds#_enable()    {{{1
+
+""
+" @private
+" Enable autocmds event logging. Writes a timestamped message to the log file
+" and displays user feedback.
+function! dn#log_autocmds#_enable() abort
+    " clear previously set autocmds
     augroup LogAutocmd
         autocmd!
     augroup END
 
-    let l:date = strftime('%F', localtime())
-    let l:abort_enable = 0
+    " don't set flag to true until log file is successfully written to
+    let s:enabled = 0
 
+    " can't log without logfile!
+    if empty(s:logfile)
+        call s:error('Cannot enable logging -- log file path is not set')
+        return
+    endif
+
+    " write log message
     try
-        if s:enabled  " stop logging
-            echomsg 'Log file is ' . s:logfile
-            echomsg 'Autocmd event logging is DISABLED'
-            try
-                call s:log('Stopped autocmd log (' . l:date . ')')
-            catch
-            endtry
-        else  " start logging
-            if empty(s:logfile)  " can't log without logfile!
-                throw 'No log file path has been set'
-            endif
-            try
-                call s:log('Started autocmd log (' . l:date . ')')
-            catch
-                let l:abort_enable = 1
-                throw s:throwable(v:exception)
-            endtry
-            echomsg 'Autocmd event logging is ENABLED'
-            echomsg 'Log file is ' . s:logfile
-            augroup LogAutocmd
-                for l:au in s:aulist
-                    silent execute 'autocmd' l:au
-                                \ '* call s:log(''' . l:au . ''')'
-                endfor
-            augroup END
-        endif
+        call s:log([repeat('*', 40), 'Started autocmd event logging'])
     catch
-        call s:error(v:exception)
-    finally  " toggle logging status
-        if l:abort_enable
-            call s:error('Unable to enable autcmds event logging')
-        else
-            let s:enabled = get(s:, 'enabled', 0) ? 0 : 1
-        endif
+        call s:error(s:exception_error(v:exception))
+        return
     endtry
+
+    " successful write to log so: set flag, give feedback, and set autocmds
+    let s:enabled = 1
+
+    echomsg 'Autocmd event logging is ENABLED'
+    echomsg 'Log file is ' . s:logfile
+
+    augroup LogAutocmd
+        for l:au in s:aulist
+            silent execute 'autocmd' l:au
+                        \ '* call s:log_or_disable(''' . l:au . ''')'
+        endfor
+    augroup END
+endfunction
+
+" dn#log_autocmds#_disable()    {{{1
+
+""
+" @private
+" Toggle autocmds logging on and off.
+"
+" Writes a timestamped message to the log file unless [suppress_write] is
+" present and true, i.e., default is to write log.
+" @default suppress_write=false
+function! dn#log_autocmds#_disable(...) abort
+    " process args
+    " - note logic flip from suppress_write to write_log
+    let l:write_log = (a:0 && a:1) ? 0 : 1
+
+    " clear previously set autocmds
+    augroup LogAutocmd
+        autocmd!
+    augroup END
+
+    " set flag to false
+    let s:enabled = 0
+
+    " write log if required, ignoring any errors
+    if l:write_log
+        try
+            call s:log([repeat('*', 40), 'Stopped autocmd event logging'])
+        catch
+        endtry
+    endif
+
+    " provide feedback
+    echomsg 'Log file is ' . s:logfile
+    echomsg 'Autocmd event logging is DISABLED'
 endfunction
 
 " dn#log_autocmds#_status()    {{{1
@@ -234,8 +311,8 @@ function! dn#log_autocmds#_annotate(message) abort
         call s:error('Autocmd event logging is not enabled')
         return
     endif
-    " log message
-    call s:log(a:message)
+    " log message, disabling logging on write error
+    call s:log_or_disable(a:message)
 endfunction
 
 " dn#log_autocmds#_delete()    {{{1
