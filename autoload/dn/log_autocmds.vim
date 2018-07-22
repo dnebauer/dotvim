@@ -323,23 +323,21 @@ function! dn#log_autocmds#_delete() abort
     if s:enabled
         call dn#log_autocmds#_disable()
     endif
-    if filewritable(s:logfile)
-        let l:result = delete(s:logfile)
-        let l:errors = []
-        if l:result != 0
-            call add(l:errors, 'Operating system reported delete error')
-        endif
-        if filewritable(s:logfile)
-            call add(l:errors, 'Log file was not deleted')
-        endif
-        if empty(l:errors)  " presume success
-            echomsg 'Deleted ' s:logfile
-        else  " there were problems
-            call insert(l:errors, 'Log file: ' . s:logfile)
-            call s:error(join(l:errors, "\n"))
-        endif
-    else  " can't find writable log file, so presume doesn't exist
-        echomsg "Can't find " . s:logfile . ' to delete'
+    let l:result = delete(s:logfile)
+    let l:errors = []
+    if l:result != 0
+        call add(l:errors, 'Operating system reported delete error')
+    endif
+    if filereadable(s:logfile)
+        call add(l:errors, 'Log file was not deleted')
+    else
+        call add(l:errors, 'Perhaps log file was deleted previously?')
+    endif
+    if empty(l:errors)  " presume success
+        echomsg 'Deleted ' s:logfile
+    else  " there were problems
+        call insert(l:errors, 'Log file: ' . s:logfile)
+        call s:error(join(l:errors, "\n"))
     endif
 endfunction
 " }}}1
