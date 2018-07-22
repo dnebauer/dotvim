@@ -128,7 +128,7 @@ function! s:log_or_disable(message) abort
         call s:log(a:message)
     catch
         call s:error(s:exception_error(v:exception))
-        call dn#log_autocmds#_disable(1)  " disable without log write
+        call dn#log_autocmds#_disable()  " disable without log write
     endtry
 endfunction
 
@@ -163,7 +163,7 @@ endfunction
 " @private
 " Toggle autocmds logging on and off.
 function! dn#log_autocmds#_toggle() abort
-    if   s:enabled | call dn#log_autocmds#_disable(1)
+    if   s:enabled | call dn#log_autocmds#_disable()
     else           | call dn#log_autocmds#_enable()
     endif
 endfunction
@@ -285,7 +285,7 @@ function! dn#log_autocmds#_logfile(path) abort
     " okay, set logfile path
     let l:enabled = s:enabled
     if l:enabled
-        call dn#log_autocmds#_disable(1)
+        call dn#log_autocmds#_disable()
     endif
     let s:logfile = l:path
     if l:enabled
@@ -321,7 +321,7 @@ endfunction
 " Delete log file if it exists.
 function! dn#log_autocmds#_delete() abort
     if s:enabled
-        call dn#log_autocmds#_disable(1)
+        call dn#log_autocmds#_disable()
     endif
     if filewritable(s:logfile)
         let l:result = delete(s:logfile)
