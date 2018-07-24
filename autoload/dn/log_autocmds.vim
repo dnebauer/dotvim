@@ -1,6 +1,7 @@
 " Script variables
 
 " s:aulist  - events to log    {{{1
+
 ""
 " Autocmd events to log.
 "
