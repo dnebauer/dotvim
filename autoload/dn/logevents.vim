@@ -3,9 +3,9 @@
 " s:aulist  - events to log    {{{1
 
 ""
-" Autocmd events to log.
+" Events to log.
 "
-" The following autocmds are deliberately not logged because of side effects:
+" The following events are deliberately not logged because of side effects:
 " - SourceCmd
 " - FileAppendCmd
 " - FileWriteCmd
@@ -61,17 +61,17 @@ let s:aulist = [
 ""
 " Log file path.
 "
-" Can be set from variable g:dn_autocmds_log or by command
-" @command(AutocmdsLogFile). Otherwise defaults to file named
-" "vim-autocmds-log" in the user's home directory.
+" Can be set from variable |g:dn_events_log| or by command
+" @command(EventLogFile). Otherwise defaults to file named "vim-events-log" in
+" the user's home directory.
 let s:logfile = ''
 
 " s:enabled - logging status    {{{1
 
 ""
-" Autocmd logging status.
+" Event logging status.
 "
-" Whether autocmd event logging is currently enabled.
+" Whether event logging is currently enabled.
 let s:enabled = 0
 " }}}1
 
@@ -116,7 +116,7 @@ function! s:log(message) abort
     " - writefile() throws error and exits function if invalid filepath, but
     "   just in case throw manual error if error code returned by writefile()
     let l:result = writefile(l:entries, s:logfile, 'a')
-    if l:result != 0 | throw 'Autocmds log write operation failed' | endif
+    if l:result != 0 | throw 'Event log write operation failed' | endif
 endfunction
 
 " s:log_or_disable(message)    {{{1
@@ -129,7 +129,7 @@ function! s:log_or_disable(message) abort
         call s:log(a:message)
     catch
         call s:error(s:exception_error(v:exception))
-        call dn#log_autocmds#_disable()  " disable without log write
+        call dn#logevents#_disable()  " disable without log write
     endtry
 endfunction
 
@@ -158,26 +158,26 @@ endfunction
 
 " Private functions
 
-" dn#log_autocmds#_toggle()    {{{1
+" dn#logevents#_toggle()    {{{1
 
 ""
 " @private
 " Toggle autocmds logging on and off.
-function! dn#log_autocmds#_toggle() abort
-    if   s:enabled | call dn#log_autocmds#_disable()
-    else           | call dn#log_autocmds#_enable()
+function! dn#logevents#_toggle() abort
+    if   s:enabled | call dn#logevents#_disable()
+    else           | call dn#logevents#_enable()
     endif
 endfunction
 
-" dn#log_autocmds#_enable()    {{{1
+" dn#logevents#_enable()    {{{1
 
 ""
 " @private
 " Enable autocmds event logging. Writes a timestamped message to the log file
 " and displays user feedback.
-function! dn#log_autocmds#_enable() abort
+function! dn#logevents#_enable() abort
     " clear previously set autocmds
-    augroup LogAutocmd
+    augroup LogEvents
         autocmd!
     augroup END
 
@@ -203,10 +203,10 @@ function! dn#log_autocmds#_enable() abort
     " successful write to log so: set flag, give feedback, and set autocmds
     let s:enabled = 1
 
-    echomsg 'Autocmd event logging is ENABLED'
+    echomsg 'Event logging is ENABLED'
     echomsg 'Log file is ' . s:logfile
 
-    augroup LogAutocmd
+    augroup LogEvents
         for l:au in s:aulist
             silent execute 'autocmd' l:au
                         \ '* call s:log_or_disable(''' . l:au . ''')'
@@ -214,7 +214,7 @@ function! dn#log_autocmds#_enable() abort
     augroup END
 endfunction
 
-" dn#log_autocmds#_disable()    {{{1
+" dn#logevents#_disable()    {{{1
 
 ""
 " @private
@@ -222,9 +222,9 @@ endfunction
 "
 " Attempts to writes a timestamped message to the log file but ignores any
 " errors that occur.
-function! dn#log_autocmds#_disable() abort
+function! dn#logevents#_disable() abort
     " clear previously set autocmds
-    augroup LogAutocmd
+    augroup LogEvents
         autocmd!
     augroup END
 
@@ -241,24 +241,24 @@ function! dn#log_autocmds#_disable() abort
 
     " provide feedback
     echomsg 'Log file is ' . s:logfile
-    echomsg 'Autocmd event logging is DISABLED'
+    echomsg 'Event logging is DISABLED'
 endfunction
 
-" dn#log_autocmds#_status()    {{{1
+" dn#logevents#_status()    {{{1
 
 ""
 " @private
 " Display status of autocmds event logging and the log file path.
-function! dn#log_autocmds#_status() abort
+function! dn#logevents#_status() abort
     " display logging status
     let l:status = (s:enabled) ? 'ENABLED' : 'DISABLED'
-    echomsg 'Autocmds event logging is ' . l:status
+    echomsg 'Event logging is ' . l:status
     " display logfile
     let l:path = (s:logfile) ? 'not set' : s:logfile
     echomsg 'Log file is ' . l:path
 endfunction
 
-" dn#log_autocmds#_logfile(path)    {{{1
+" dn#logevents#_logfile(path)    {{{1
 
 ""
 " @private
@@ -272,7 +272,7 @@ endfunction
 " next attempts to write to the log. If logging is enabled when this function
 " is invoked, the plugin tries to write to the file immediately with a
 " timestamped message recording the time of logging activation.
-function! dn#log_autocmds#_logfile(path) abort
+function! dn#logevents#_logfile(path) abort
     " return if no path provided
     if empty(a:path)
         call s:error('No log file path provided')
@@ -286,21 +286,21 @@ function! dn#log_autocmds#_logfile(path) abort
     " okay, set logfile path
     let l:enabled = s:enabled
     if l:enabled
-        call dn#log_autocmds#_disable()
+        call dn#logevents#_disable()
     endif
     let s:logfile = l:path
     if l:enabled
-        call dn#log_autocmds#_enable()
+        call dn#logevents#_enable()
     endif
 endfunction
 
-" dn#log_autocmds#_annotate(message)    {{{1
+" dn#logevents#_annotate(message)    {{{1
 
 ""
 " @private
 " Write message to log file. Requires autocmd event logging to be enabled; if
 " it is not, an error message is displayed.
-function! dn#log_autocmds#_annotate(message) abort
+function! dn#logevents#_annotate(message) abort
     " return if no message provided
     if empty(a:message)
         call s:error('No log message provided')
@@ -308,14 +308,14 @@ function! dn#log_autocmds#_annotate(message) abort
     endif
     " display error if not currently logging
     if !s:enabled
-        call s:error('Autocmd event logging is not enabled')
+        call s:error('Event logging is not enabled')
         return
     endif
     " log message, disabling logging on write error
     call s:log_or_disable(a:message)
 endfunction
 
-" dn#log_autocmds#_delete()    {{{1
+" dn#logevents#_delete()    {{{1
 
 ""
 " @private
@@ -325,9 +325,9 @@ endfunction
 " definitive way within vim to determine whether file exists or not: glob()
 " will find even unreadable files, but not if they are in directories for
 " which the user has no execute permissions. 
-function! dn#log_autocmds#_delete() abort
+function! dn#logevents#_delete() abort
     if s:enabled
-        call dn#log_autocmds#_disable()
+        call dn#logevents#_disable()
     endif
     let l:result = delete(s:logfile)
     let l:errors = []

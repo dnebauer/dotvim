@@ -1,52 +1,60 @@
-*dn-log-autocmds.txt*	Logs autocmd events to a log file
-David Nebauer                                                *dn-log-autocmds*
+*dn-logevents.txt*	Logs events to a log file
+David Nebauer                                                   *dn-logevents*
 
 ==============================================================================
-CONTENTS                                            *dn-log-autocmds-contents*
-  1. Introduction......................................|dn-log-autocmds-intro|
-  2. Log file........................................|dn-log-autocmds-logfile|
-  3. Autocmd Events...................................|dn-log-autocmds-events|
-  4. Commands.......................................|dn-log-autocmds-commands|
+CONTENTS                                               *dn-logevents-contents*
+  1. Introduction.........................................|dn-logevents-intro|
+  2. Configuration.......................................|dn-logevents-config|
+  3. Log file...........................................|dn-logevents-logfile|
+  4. Events..............................................|dn-logevents-events|
+  5. Commands..........................................|dn-logevents-commands|
 
 ==============================================================================
-INTRODUCTION                                           *dn-log-autocmds-intro*
+INTRODUCTION                                              *dn-logevents-intro*
 
-A plugin that logs autocmd events to a log file.
+A plugin that logs events to file.
 
 The log file location is set by default (in most cases), and can be set with a
-global variable or plugin command. See |dn-log-autocmds-logfile| for further
+global variable or plugin command. See |dn-logevents-logfile| for further
 details.
 
-Not all events are logged. See |dn-log-autocmds-events| for further details.
+Not all events are logged. See |dn-logevents-events| for further details.
 
 Logging is off by default. It is toggled on and off with the command
-|:LogAutocmds|. Current logging status can be displayed with the command
-|:AutocmdsLoggingStatus|.
+|:LogEvents|. Current logging status can be displayed with the command
+|:EventLoggingStatus|.
 
-User messages can be written to the log file (see command
-|:AnnotateAutocmdsLog|) and the log file deleted (see command
-|:DeleteAutocmdsLog|).
+User messages can be written to the log file (see command |:AnnotateEventLog|)
+and the log file deleted (see command |:DeleteEventLog|).
 
 ==============================================================================
-LOG FILE                                             *dn-log-autocmds-logfile*
+CONFIGURATION                                            *dn-logevents-config*
 
-The default log file name is "vim-autocmds-log" in the user's home directory.
+                                                             *g:dn_events_log*
+The path to the log file. Must be set before the dn-logevents plugin is
+initialised, and is intended to be set in |vimrc|. See |dn-logevents-logfile|
+for further details on setting the log file path.
+
+==============================================================================
+LOG FILE                                                *dn-logevents-logfile*
+
+The default log file name is "vim-events-log" in the user's home directory.
 The plugin will look for the home directory. On Windows systems it will look
 for the variable $USERPROFILE. On all other systems it will look for the
 variable $HOME. If the variable is found, the default log file is set to
-"$USERPROFILE/vim-autocmds-log" or "$HOME/vim-autocmds-log".
+"$USERPROFILE/vim-events-log" or "$HOME/vim-events-log".
 
-If the variable g:dn_autocmds_log is set at the time of plugin initialisation,
+If the variable |g:dn_events_log| is set at the time of plugin initialisation,
 the log file path is set to the value of the variable.
 
-At any time the log file path can be changed using the |:AutocmdsLogFile|.
+At any time the log file path can be changed using the |:EventLogFile|.
 
 The plugin does not check whether the logfile path is valid. If the logfile
 path is invalid it will result in system errors when the plugin attempts to
 write to the log file.
 
 ==============================================================================
-AUTOCMD EVENTS                                        *dn-log-autocmds-events*
+EVENTS                                                   *dn-logevents-events*
 
 The following events are logged:
 
@@ -71,20 +79,20 @@ original project, they resulted in "side effects":
 BufReadCmd, BufWriteCmd, FileAppendCmd, FileReadCmd, FileWriteCmd,
 FuncUndefined, and SourceCmd.
 
-If an autocmd event does not appear in either list above, it has been missed!
+If an event does not appear in either list above, it has been missed!
 
 ==============================================================================
-COMMANDS                                            *dn-log-autocmds-commands*
+COMMANDS                                               *dn-logevents-commands*
 
-:LogAutocmds                                                    *:LogAutocmds*
-  Toggle logging of autocmd events.
+:LogEvents                                                        *:LogEvents*
+  Toggle logging of events.
 
-:AutocmdsLoggingStatus                                *:AutocmdsLoggingStatus*
-  Get status of autocmd event logging, i.e., whether it is enabled or not, and
-  display the log file path.
+:EventLoggingStatus                                      *:EventLoggingStatus*
+  Get status of event logging, i.e., whether it is enabled or not, and display
+  the log file path.
 
-:AutocmdsLogFile {path}                                     *:AutocmdsLogFile*
-  Log future autocmd events and notes to file {path}.
+:EventLogFile {path}                                           *:EventLogFile*
+  Log future events and notes to file {path}.
 
   If {path} is the name of the current log file, the command will have no
   effect. If the plugin is currently logging to a different file, that file is
@@ -95,10 +103,10 @@ COMMANDS                                            *dn-log-autocmds-commands*
   is used, the plugin tries to write to the file immediately with a
   timestamped message recording the time of logging activation.
 
-:AnnotateAutocmdsLog {message}                          *:AnnotateAutocmdsLog*
+:AnnotateEventLog {message}                                *:AnnotateEventLog*
   Write {message} to the log file on its own line.
 
-:DeleteAutocmdsLog                                        *:DeleteAutocmdsLog*
+:DeleteEventLog                                              *:DeleteEventLog*
   Delete log file if it exists.
 
 

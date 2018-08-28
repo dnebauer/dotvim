@@ -4,8 +4,8 @@
 " License: CC0
 
 " Housekeeping    {{{1
-if exists('g:loaded_dn_log_autocmds') | finish | endif
-let g:loaded_dn_log_autocmds = 1
+if exists('g:loaded_dn_log_events') | finish | endif
+let g:loaded_dn_log_events = 1
 
 let s:save_cpo = &cpoptions
 set cpoptions&vim
@@ -14,8 +14,8 @@ set cpoptions&vim
 
 ""
 " @section Introduction, intro
-" @order intro logfile events commands
-" A plugin that logs autocmd events to a log file.
+" @order intro config logfile events commands
+" A plugin that logs events to file.
 "
 " The log file location is set by default (in most cases), and can be set with
 " a global variable or plugin command. See @section(logfile) for further
@@ -24,28 +24,28 @@ set cpoptions&vim
 " Not all events are logged. See @section(events) for further details.
 "
 " Logging is off by default. It is toggled on and off with the command
-" @command(LogAutocmds). Current logging status can be displayed with the
-" command @command(AutocmdsLoggingStatus).
+" @command(LogEvents). Current logging status can be displayed with the
+" command @command(EventLoggingStatus).
 "
 " User messages can be written to the log file (see command
-" @command(AnnotateAutocmdsLog)) and the log file deleted (see command
-" @command(DeleteAutocmdsLog)).
+" @command(AnnotateEventLog)) and the log file deleted (see command
+" @command(DeleteEventLog)).
 
 " Explain logfile path    {{{1
 
 ""
 " @section Log file, logfile
-" The default log file name is "vim-autocmds-log" in the user's home
-" directory. The plugin will look for the home directory. On Windows systems
-" it will look for the variable $USERPROFILE. On all other systems it will
-" look for the variable $HOME. If the variable is found, the default log file
-" is set to "$USERPROFILE/vim-autocmds-log" or "$HOME/vim-autocmds-log".
+" The default log file name is "vim-events-log" in the user's home directory.
+" The plugin will look for the home directory. On Windows systems it will look
+" for the variable $USERPROFILE. On all other systems it will look for the
+" variable $HOME. If the variable is found, the default log file is set to
+" "$USERPROFILE/vim-events-log" or "$HOME/vim-events-log".
 "
-" If the variable g:dn_autocmds_log is set at the time of plugin
+" If the variable |g:dn_events_log| is set at the time of plugin
 " initialisation, the log file path is set to the value of the variable.
 "
 " At any time the log file path can be changed using the
-" @command(AutocmdsLogFile).
+" @command(EventLogFile).
 "
 " The plugin does not check whether the logfile path is valid. If the logfile
 " path is invalid it will result in system errors when the plugin attempts to
@@ -67,16 +67,22 @@ function s:os() abort
 endfunction
 
 ""
+" @setting g:dn_events_log
+" The path to the log file. Must be set before the @plugin(name) plugin
+" is initialised, and is intended to be set in |vimrc|. See @section(logfile)
+" for further details on setting the log file path.
+
+""
 " @private
 " Set default log file path.
 function s:set_logfile() abort
     " user-set path takes precedence
-    if exists('g:dn_autocmds_log')
-        call dn#log_autocmds#_logfile(g:dn_autocmds_log)
+    if exists('g:dn_events_log')
+        call dn#logevents#_logfile(g:dn_events_log)
         return
     endif
     " default value
-    let l:default_file = 'vim-autocmds-log'
+    let l:default_file = 'vim-events-log'
     let l:os = s:os()
     let l:logfile = ''
     if l:os ==# 'windows' && exists('$USERPROFILE')
@@ -86,16 +92,16 @@ function s:set_logfile() abort
         let l:logfile = $HOME . '/' . l:default_file
     endif
     if !empty(l:logfile)
-        call dn#log_autocmds#_logfile(l:logfile)
+        call dn#logevents#_logfile(l:logfile)
     endif
 endfunction
 
 call s:set_logfile()
 
-" Explain autocmd events    {{{1
+" Explain events    {{{1
 
 ""
-" @section Autocmd Events, events
+" @section Events, events
 " The following events are logged:
 "
 " BufAdd, BufCreate, BufDelete, BufEnter, BufFilePost, BufFilePre, BufHidden,
@@ -120,8 +126,7 @@ call s:set_logfile()
 " BufReadCmd, BufWriteCmd, FileAppendCmd, FileReadCmd, FileWriteCmd,
 " FuncUndefined, and SourceCmd.
 " 
-" If an autocmd event does not appear in either list above, it has been
-" missed!
+" If an event does not appear in either list above, it has been missed!
 
 " Housekeeping    {{{1
 

@@ -1,4 +1,4 @@
-# vim-dn-log-autocmds #
+# vim-dn-logevents #
 
 A vim plugin that logs autocmd events.
 
@@ -6,19 +6,19 @@ A vim plugin that logs autocmd events.
 
 Provides the following commands:
 
-|Command               |Notes                                                |
-|----------------------|-----------------------------------------------------|
-|:LogAutocmds          |Toggles logging of autocmd events.                   |
-|                      |Creates log file if it does not exist. Appends to log file if it already exists.|
-|                      |The plugin will echo messages advising the user whether the plugin was just enabled or disabled, and providing the path to the log file.|
-|                      |Causes an error if no log file path is set when attempting to enable autocmd logging.|
-|:AutocmdsLoggingStatus|Display current logging status and log file path.    |
-|:AutocmdsLogFile      |Change the path to the log file.                     |
-|                      |Default log file is `$HOME/vim-autocmds-log` (*nix) or `$USERPROFILE/vim-autocmds-log` (Windows). Other operating systems have no default log file.|
-|                      |If the variable `g:dn_autocmds_log` is set at the time the plugin is loaded, its value will be used as the path of the log file. The plugin will not check the validity of the path supplied. An invalid or unwritable path will result in an error when the plugin attempts to log an autocmd event.|
-|:AnnotateAutocmdsLog  |Add a single line note to the autocmds log file.     |
-|                      |Displays an error message if autocmd logging is not enabled.|
-|:DeleteAutocmdsLog    |Deletes log file if it exists.                       |
+|Command            |Notes                                                   |
+|-------------------|--------------------------------------------------------|
+|:LogEvents         |Toggles logging of events.                              |
+|                   |Creates log file if it does not exist. Appends to log file if it already exists.|
+|                   |The plugin will echo messages advising the user whether the plugin was just enabled or disabled, and providing the path to the log file.|
+|                   |Causes an error if no log file path is set when attempting to enable event logging.|
+|:EventLoggingStatus|Display current logging status and log file path.       |
+|:EventLogFile      |Change the path to the log file.                        |
+|                   |Default log file is `$HOME/vim-events-log` (*nix) or `$USERPROFILE/vim-events-log` (Windows). Other operating systems have no default log file.|
+|                   |If the variable `g:dn_events_log` is set at the time the plugin is loaded, its value will be used as the path of the log file. The plugin will not check the validity of the path supplied. An invalid or unwritable path will result in an error when the plugin attempts to log an event.|
+|:AnnotateEventLog  |Add a single line note to the event log file.           |
+|                   |Displays an error message if event logging is not enabled.|
+|:DeleteEventLog    |Deletes log file if it exists.                          |
 
 ## Events ##
 
@@ -45,7 +45,7 @@ original project, they resulted in 'side effects':
 * BufReadCmd, BufWriteCmd, FileAppendCmd, FileReadCmd, FileWriteCmd,
   FuncUndefined, and SourceCmd.
 
-If an autocmd event does not appear in either list it has been missed!
+If an event does not appear in either list it has been missed!
 
 ## Credits ##
 
