@@ -9,8 +9,7 @@ Provides the following commands:
 |Command            |Notes                                                   |
 |-------------------|--------------------------------------------------------|
 |:LogEvents         |Toggles logging of events.                              |
-|                   |\
-                     Creates log file if it does not exist. Appends to log file if it already exists.|
+|                   |Creates log file if it does not exist. Appends to log file if it already exists.|
 |                   |The plugin will echo messages advising the user whether the plugin was just enabled or disabled, and providing the path to the log file.|
 |                   |Causes an error if no log file path is set when attempting to enable event logging.|
 |:EventLoggingStatus|Display current logging status and log file path.       |
